@@ -47,11 +47,30 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
         
         self.selectBtnsView.cBtnClick = { [weak self] (index) in
             self?.cleanCellTimer()
-            self?.vm.getData(index) { [weak self] (arrModels) in
+            self?.vm.getData(index, nil, { [weak self] (model) in
                 self?.bhTableview.reloadData()
-            }
+            }, nil)
         }
         //self.selectBtnsView.defaultClickedIndex = -1
+        self.selectBtnsView.arrData = self.vm.getData_SelectButtons()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.selectBtnsView.arrData == nil {
+            if kArrModels_BuyingHall.count == 0 {
+                let delegateView = self.tabBarController?.navigationController?.view
+                self.vm.getData(0, delegateView, { [weak self] (model) in
+                    self?.bhTableview.reloadData()
+                    self?.selectBtnsView.arrData = self?.vm.getData_SelectButtons()
+                    }, nil)
+            }
+            else {
+                self.bhTableview.reloadData()
+                self.selectBtnsView.arrData = self.vm.getData_SelectButtons()
+            }
+        }
+        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -59,7 +78,7 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.vm.arrModels.count
+        return self.vm.model?.arrCellModel?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -68,17 +87,23 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellId", for: indexPath) as! BuyingHall_TableCell
-        let model = self.vm.arrModels[indexPath.row]
-        cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
-        cell.lbName.text = model.name!
-        cell.lbDescription.text = model.desc!
-        cell.startTimer(model)
-        cell.delegate = self
-        //cell.cPrizeDetail = { [weak self] (_ cell: BuyingHall_TableCell) -> () in
-        cell.cPrizeDetail = { [weak self] (cell) in
-            let vc = PrizeDetailViewController()
-            vc.name = model.name!
-            self?.tabBarController?.navigationController?.pushViewController(vc, animated: true)
+        let model = self.vm.model?.arrCellModel?[indexPath.row]
+        if model != nil {
+            cell.id = model!.id!
+            cell.pid = model!.pid!
+            cell.imgviewIcon.image = UIImage(named: model!.iconImgName!)
+            cell.lbName.text = model!.name
+            cell.lbDescription.text = "--"
+            cell.startTimer(model!)
+            cell.delegate = self
+            //cell.cPrizeDetail = { [weak self] (_ cell: BuyingHall_TableCell) -> () in
+            cell.cPrizeDetail = { [weak self] (cell) in
+                let vc = PrizeDetailViewController()
+                vc.id = cell.id
+                vc.pid = cell.pid
+                vc.name = cell.lbName.text!
+                self?.tabBarController?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
         return cell
     }
@@ -87,17 +112,21 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.deselectRow(at: indexPath, animated: true)
         let cell = tableView.cellForRow(at: indexPath) as! BuyingHall_TableCell
         let vc = BuyingDetailViewController()
-        vc.detailId = cell.lbName.text!
+        vc.id = cell.id
+        vc.pid = cell.pid
+        vc.name = cell.lbName.text!
         self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
     }
     
     func cleanCellTimer() {
-        //self.vm.arrModels.removeAll()
-        //self.bhTableview.reloadData()
-        for i in 0..<self.vm.arrModels.count {
+        let count = self.vm.model?.arrCellModel?.count ?? 0
+        for i in 0..<count {
             let indexPath = IndexPath(row: i, section: 0)
-            let cell = self.bhTableview.cellForRow(at: indexPath) as! BuyingHall_TableCell
-            cell.stopTimer()
+            let cell = self.bhTableview.cellForRow(at: indexPath) as? BuyingHall_TableCell
+            cell?.stopTimer()
+            if cell == nil {
+                print("*_* !? \(i)")
+            }
         }
     }
     

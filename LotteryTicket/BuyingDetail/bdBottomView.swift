@@ -9,26 +9,26 @@
 class bdBottomView: UIView, UITextFieldDelegate {
     
     private enum BtnTag : Int {
-        case minus = 100, add, yuan, jiao, fen, shoppingCar, betting
+        case minus = 100, add, yuan, jiao, fen, addShoppingCar, betting_Directly, betting_GoToShoppingCar
     }
     
     static let height:CGFloat = 120
     
-    let lbBalance: UILabel = {
+    private let lbBalance: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textColor = UIColor.red
-        lb.text = "余额：20000.00"
+        lb.text = "余额：--"
         return lb
     } ()
     
-    let lbDesc: UILabel = {
+    private let lbDesc: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textColor = UIColor.red
-        lb.text = "单注单倍最高奖金2000.00元"
+        lb.text = "单注单倍最高奖金--元"
         return lb
     } ()
     
@@ -102,31 +102,51 @@ class bdBottomView: UIView, UITextFieldDelegate {
         return btn
     } ()
     
-    let lbTotalBetting: UILabel = {
+    private let lbTotalBetting: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 14)
         //lb.text = "总投注 0 注"
-        var attrText = NSMutableAttributedString(string: "总投注 ", attributes: [NSForegroundColorAttributeName:UIColor.darkText])
+        let attrText = NSMutableAttributedString(string: "总投注 ")
         attrText.append(NSAttributedString(string: "0", attributes: [NSForegroundColorAttributeName:UIColor.red]))
         attrText.append(NSAttributedString(string: " 注"))
         lb.attributedText = attrText
         return lb
     } ()
     
-    let lbTotalAmount: UILabel = {
+    var numbers: Int? = nil {
+        didSet {
+            let strNumbers = numbers == nil ? "0" : String(numbers!)
+            let attrText = NSMutableAttributedString(string: "总投注 ")
+            attrText.append(NSAttributedString(string: strNumbers, attributes: [NSForegroundColorAttributeName:UIColor.red]))
+            attrText.append(NSAttributedString(string: " 注"))
+            self.lbTotalBetting.attributedText = attrText
+        }
+    }
+    
+    private let lbTotalAmount: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 14)
         //lb.text = "总投注金额 0.00 注"
-        var attrText = NSMutableAttributedString(string: "总投注金额 ", attributes: [NSForegroundColorAttributeName:UIColor.darkText])
-        attrText.append(NSAttributedString(string: "0.00", attributes: [NSForegroundColorAttributeName:UIColor.red]))
+        let attrText = NSMutableAttributedString(string: "总投注金额 ")
+        attrText.append(NSAttributedString(string: "0.000", attributes: [NSForegroundColorAttributeName:UIColor.red]))
         attrText.append(NSAttributedString(string: " 元 "))
         lb.attributedText = attrText
         return lb
     } ()
     
-    lazy var btnShoppingCar: UIButton = {
+    var amount: Float? = nil {
+        didSet {
+            let strAmount = amount == nil ? "0" : String(format: "%0.3f", amount!)
+            let attrText = NSMutableAttributedString(string: "总投注金额 ")
+            attrText.append(NSAttributedString(string: strAmount, attributes: [NSForegroundColorAttributeName:UIColor.red]))
+            attrText.append(NSAttributedString(string: " 元 "))
+            self.lbTotalAmount.attributedText = attrText
+        }
+    }
+    
+    private lazy var btnAddShoppingCar: UIButton = {
         let btn = UIButton()
         btn.setTitle("加入购物车", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -134,11 +154,11 @@ class bdBottomView: UIView, UITextFieldDelegate {
         btn.layer.cornerRadius = 5
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.addTarget(self, action: #selector(btnAction(_:)), for: .touchUpInside)
-        btn.tag = BtnTag.shoppingCar.rawValue
+        btn.tag = BtnTag.addShoppingCar.rawValue
         return btn
     } ()
     
-    lazy var btnBetting: UIButton = {
+    lazy var btnBetting_Directly: UIButton = {
         let btn = UIButton()
         btn.setTitle("下注", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -146,8 +166,27 @@ class bdBottomView: UIView, UITextFieldDelegate {
         btn.layer.cornerRadius = 5
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.addTarget(self, action: #selector(btnAction(_:)), for: .touchUpInside)
-        btn.tag = BtnTag.betting.rawValue
+        btn.tag = BtnTag.betting_Directly.rawValue
         return btn
+    } ()
+    
+    lazy var btnBetting_GoToShoppingCar: UIButton = {
+        let btn = UIButton()
+        btn.setImage(UIImage(named: "navItem_menu"), for: .normal)
+        btn.backgroundColor = UIColor.red
+        btn.layer.cornerRadius = 5
+        btn.addTarget(self, action: #selector(btnAction(_:)), for: .touchUpInside)
+        btn.tag = BtnTag.betting_GoToShoppingCar.rawValue
+        return btn
+    } ()
+    
+    lazy var lbShoppingCarNum: UILabel = {
+        let lb = UILabel()
+        lb.textAlignment = .center
+        lb.textColor = UIColor.red
+        lb.font = UIFont.systemFont(ofSize: 14)
+        lb.text = "0"
+        return lb
     } ()
     
     override init(frame: CGRect) {
@@ -227,6 +266,13 @@ class bdBottomView: UIView, UITextFieldDelegate {
             make.top.equalTo(btnMinus.snp.bottom).offset(5)
         }
         
+        let bgView_Betting = UIView()
+        bgView_Betting.backgroundColor = kBgColorGray
+        self.addSubview(bgView_Betting)
+        bgView_Betting.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalToSuperview()
+            make.top.equalTo(lineview2.snp.bottom)
+        }
         self.addSubview(self.lbTotalBetting)
         self.lbTotalBetting.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(5)
@@ -241,17 +287,38 @@ class bdBottomView: UIView, UITextFieldDelegate {
             make.height.equalTo(21)
             make.width.equalTo(self.lbTotalBetting)
         }
-        self.addSubview(self.btnBetting)
-        self.btnBetting.snp.makeConstraints { (make) in
+        self.addSubview(self.btnBetting_Directly)
+        self.btnBetting_Directly.snp.makeConstraints { (make) in
             make.right.equalToSuperview().offset(-5)
             make.top.equalTo(lineview2.snp.bottom).offset(5)
             make.bottom.equalToSuperview().offset(-5)
             make.width.equalTo(80)
         }
-        self.addSubview(self.btnShoppingCar)
-        self.btnShoppingCar.snp.makeConstraints { (make) in
-            make.top.bottom.width.equalTo(self.btnBetting)
-            make.right.equalTo(self.btnBetting.snp.left).offset(-5)
+        self.addSubview(self.btnAddShoppingCar)
+        self.btnAddShoppingCar.snp.makeConstraints { (make) in
+            make.top.bottom.width.equalTo(self.btnBetting_Directly)
+            make.right.equalTo(self.btnBetting_Directly.snp.left).offset(-5)
+        }
+        
+        self.addSubview(self.btnBetting_GoToShoppingCar)
+        self.btnBetting_GoToShoppingCar.snp.makeConstraints { (make) in
+            make.top.bottom.left.right.equalTo(self.btnBetting_Directly)
+        }
+        self.btnBetting_GoToShoppingCar.isHidden = true
+        let bgView_lbBettingCount = UIView()
+        
+        bgView_lbBettingCount.backgroundColor = UIColor.white
+        let bgView_lbBettingCount_W: CGFloat = 25
+        bgView_lbBettingCount.layer.cornerRadius = bgView_lbBettingCount_W / 2
+        self.btnBetting_GoToShoppingCar.addSubview(bgView_lbBettingCount)
+        bgView_lbBettingCount.snp.makeConstraints { (make) in
+            make.top.equalToSuperview().offset(-3)
+            make.right.equalToSuperview().offset(3)
+            make.width.height.equalTo(bgView_lbBettingCount_W)
+        }
+        bgView_lbBettingCount.addSubview(self.lbShoppingCarNum)
+        self.lbShoppingCarNum.snp.makeConstraints { (make) in
+            make.left.right.top.bottom.equalToSuperview()
         }
     }
     
@@ -260,10 +327,12 @@ class bdBottomView: UIView, UITextFieldDelegate {
     }
     
     
+    weak var delegate: bdContent_AnyButton_Delegate?
+    
     @objc private func btnAction_tf(_ sender: UIButton) {
         if (self.tfInput.text?.isEmpty)! {
             self.tfInput.text = "1"
-            return
+            //return
         }
         var n = Int(self.tfInput.text!)
         if sender.tag == BtnTag.minus.rawValue {
@@ -281,6 +350,10 @@ class bdBottomView: UIView, UITextFieldDelegate {
             }
         }
         self.tfInput.text = String(n!)
+        
+        if self.delegate != nil {
+            self.delegate!.dRunCalculate()
+        }
     }
     
     @objc private func btnAction_yjf(_ sender: UIButton) {
@@ -301,9 +374,46 @@ class bdBottomView: UIView, UITextFieldDelegate {
         }
         else if sender.tag == BtnTag.fen.rawValue {
         }
+        if self.delegate != nil {
+            self.delegate!.dRunCalculate()
+        }
     }
     
+    var cBtnAction_AddShoppingCar: (()->())?
+    var cBtnAction_Betting_Directly:(()->Void)?
+    var cBtnAction_Betting_GoToShoppingCar:(()->Void)?
+    
     @objc private func btnAction(_ sender: UIButton) {
+        if sender.tag == BtnTag.addShoppingCar.rawValue {
+            if self.cBtnAction_AddShoppingCar != nil {
+                self.cBtnAction_AddShoppingCar!()
+            }
+        }
+        else if sender.tag == BtnTag.betting_Directly.rawValue {
+            if self.cBtnAction_Betting_Directly != nil {
+                self.cBtnAction_Betting_Directly!()
+            }
+        }
+        else if sender.tag == BtnTag.betting_GoToShoppingCar.rawValue {
+            if self.cBtnAction_Betting_GoToShoppingCar != nil {
+                self.cBtnAction_Betting_GoToShoppingCar!()
+            }
+        }
+    }
+    
+    func fResetData() {
+        self.numbers = 0
+        self.amount = 0
+        self.tfInput.text = "1"
+        self.btnYuan.isSelected = true
+        self.btnYuan.backgroundColor = UIColor.red
+        self.btnYuan.layer.borderColor = UIColor.red.cgColor
+        self.btnJiao.isSelected = false
+        self.btnJiao.backgroundColor = UIColor.white
+        self.btnJiao.layer.borderColor = UIColor.lightGray.cgColor
+        self.btnFen.isSelected = false
+        self.btnFen.backgroundColor = UIColor.white
+        self.btnFen.layer.borderColor = UIColor.lightGray.cgColor
     }
     
     
@@ -320,6 +430,9 @@ class bdBottomView: UIView, UITextFieldDelegate {
                 n! = 9999
             }
             self.tfInput.text = String(n!)
+        }
+        if self.delegate != nil {
+            self.delegate!.dRunCalculate()
         }
     }
     

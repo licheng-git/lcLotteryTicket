@@ -11,6 +11,9 @@ import SnapKit
 
 class LotteryHall_CollectionCell: UICollectionViewCell {
     
+    var id = String()
+    var pid = String()
+    
     let imgviewIcon: UIImageView = {
         let imgview = UIImageView()
         return imgview

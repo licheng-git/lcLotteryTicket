@@ -8,9 +8,7 @@
 
 class bdNavRightTableView: UIView, UITableViewDelegate, UITableViewDataSource {
     
-    var cCellSelect: ((_ cellId:String)->())?
-    
-    var arrModel = [bdNavRightTable_Cell_Model]()
+    var cCellSelect: ((_ cell:bdNavRight_TableCell)->())?
     
     lazy var myTableview: UITableView = {
         let tableview = UITableView()
@@ -91,7 +89,7 @@ class bdNavRightTableView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.arrModel.count
+        return kArrModels_bdNavRight.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -100,7 +98,9 @@ class bdNavRightTableView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! bdNavRight_TableCell
-        let model = self.arrModel[indexPath.row]
+        let model = kArrModels_bdNavRight[indexPath.row]
+        cell.id = model.id!
+        cell.pid = model.pid!
         cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
         cell.lbName.text = model.name
         if indexPath.row == 0 {
@@ -116,7 +116,7 @@ class bdNavRightTableView: UIView, UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         let cell = tableView.cellForRow(at: indexPath) as! bdNavRight_TableCell
         if self.cCellSelect != nil {
-            self.cCellSelect!(cell.lbName.text!)
+            self.cCellSelect!(cell)
         }
         self.remove()
     }

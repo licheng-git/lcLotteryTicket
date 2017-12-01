@@ -32,3 +32,4 @@ class bdNavTitleDetailView1: UIView {
     }
     
 }
+

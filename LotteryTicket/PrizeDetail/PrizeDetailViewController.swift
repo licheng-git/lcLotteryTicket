@@ -8,6 +8,8 @@
 
 class PrizeDetailViewController: UIViewController {
     
+    var id = String()
+    var pid = String()
     var name = String()
     
     let vm = PrizeDetail_ViewModel()
@@ -32,11 +34,15 @@ class PrizeDetailViewController: UIViewController {
             make.right.equalToSuperview().offset(-5)
             make.bottom.equalToSuperview().offset(-5)
         }
-        self.vm.getData { [weak self] (arrModel) in
-            self?.contentView.arrModel = arrModel
+        self.vm.getData(self.pid, self.navigationController?.view) { [weak self] (arrModels) in
+            self?.contentView.arrModel = arrModels
             self?.contentView.reloadData()
         }
         
+    }
+    
+    deinit {
+        print("PrizeDetailViewController deinit")
     }
     
 }

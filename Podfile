@@ -3,14 +3,16 @@ use_frameworks!
 
 target 'LotteryTicket' do
     
-    #pod 'Alamofire'
+    pod 'Alamofire'              #AFNetworking
     #pod 'Moya', '9.0.0'
-    #pod 'SwiftyJSON'
+    pod 'ReachabilitySwift'
+    pod 'SwiftyJSON'
     
-    pod 'SnapKit', '~> 3.0.0'    #pod 'Masonry'
-    pod 'MJRefresh'
-    pod 'MBProgressHUD'
-    pod 'FSPagerView'
+    pod 'SnapKit', '~> 3.0.0'    #Masonry
     pod 'IQKeyboardManagerSwift'
+    pod 'FSPagerView'
+    
+    pod 'MJRefresh'              #ESPullToRefresh
+    pod 'MBProgressHUD'
     
 end

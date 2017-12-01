@@ -2,15 +2,15 @@
 //  bdNavTitleDetailView.swift
 //  LotteryTicket
 //
-//  Created by Cheng Li on 2017/11/6.
+//  Created by Cheng Li on 2017/11/22.
 //  Copyright © 2017年 李诚. All rights reserved.
 //
 
 class bdNavTitleDetailView: UIView {
     
     var cBgViewTap: (()->Void)?
-    var cBtnClick_Cell: ((_ btnTitle:String)->())?
-    var cBtnClick_Header: ((_ cell0Btn0Title:String)->())?
+    var cBtnClick_Header: ((_ atIndex:Int)->())?
+    var cBtnClick_Cell: ((_ atIndex:Int)->())?
     
     private let bgMaskView: UIView = {
         let view = UIView()
@@ -22,26 +22,6 @@ class bdNavTitleDetailView: UIView {
     private let kBtnTag_Header = 100
     private let kBtnTag_Cell   = 1000
     
-    let arrData_header = [ "定位胆", "五星", "四星", "三星", "二星", "不定胆", "任选" ]
-    let arrData_sub_0 = [ [ "title":"定位胆", "items":["定位胆"] ]
-    ]
-    let arrData_sub_1 = [ [ "title":"五星", "items":["五星直选", "五星组合", "五星组选120", "五星组选5", "总和"] ]
-    ]
-    let arrData_sub_2 = [ [ "title":"前四", "items":["前四直选", "前四组合", "前四组选4"] ],
-                          [ "title":"后四", "items":["后四直选", "后四组合", "后四组选24"] ]
-    ]
-    let arrData_sub_n = [ [ "title":"后三", "items":["后三组合", "后三大小单双", "后三组三", "后三和值", "后三和值尾数", "后三包点", "后三直选", "后三组六", "后三特殊"] ],
-                          [ "title":"前三", "items":["前三包点", "btn", "button_2_width"] ],
-                          [ "title":"中三", "items":["中三组三", "."] ],
-                          [ "title":"0", "items":["1", "2", "."] ],
-                          [ "title":"cs", "items":["a", "b", "."] ]
-    ]
-    
-    private var arrBtns_header = [UIButton]()
-    private var arrBtns_cells = Array<UIButton>()
-    
-    private var bgHeaderView = UIView()
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.clear  // bgMaskView.alpha
@@ -51,8 +31,31 @@ class bdNavTitleDetailView: UIView {
         }
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(bgMaskViewTapAction(_:)))
         self.bgMaskView.addGestureRecognizer(tapGesture)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc private func bgMaskViewTapAction(_ gesture:UITapGestureRecognizer) {
+        self.removeFromSuperview()
+        if self.cBgViewTap != nil {
+            self.cBgViewTap!()
+        }
+    }
+    
+    
+    private var arrBtns_header = [UIButton]()
+    private var arrBtns_cells = Array<UIButton>()
+    
+    private var bgHeaderView = UIView()
+    
+    func fSetArrModel_Header(_ arrModel:[bdNavTitleDetail_BtnModel]) {
+        for v in self.bgHeaderView.subviews {
+            v.removeFromSuperview()
+        }
+        self.arrBtns_header.removeAll()
         
-        // header btns
         let marginX: CGFloat = 10
         let marginY: CGFloat = 10
         let btnH: CGFloat = 30
@@ -60,8 +63,9 @@ class bdNavTitleDetailView: UIView {
         var btnRows = 1
         var btnY = marginY
         var btnMaxX_pre: CGFloat = 0
-        for i in 0..<self.arrData_header.count {
-            let btnW: CGFloat = CGFloat(15 * (self.arrData_header[i].characters.count+2))  // 每个汉字长度为15，左右再空一点
+        for i in 0..<arrModel.count {
+            let model = arrModel[i]
+            let btnW: CGFloat = CGFloat(15 * (model.name!.characters.count+2))  // 每个汉字长度为15，左右再空一点
             if btnMaxX_pre + marginX + btnW >= kSCREEN_WIDTH {
                 btnRows += 1
                 btnY += btnH + marginY
@@ -78,11 +82,12 @@ class bdNavTitleDetailView: UIView {
         self.bgHeaderView.layer.borderWidth = 1
         self.bgHeaderView.frame = CGRect(x: 0, y: 0, width: kSCREEN_WIDTH, height: bgHeaderView_H)
         self.addSubview(self.bgHeaderView)
-        for i in 0..<self.arrData_header.count {
+        for i in 0..<arrModel.count {
+            let model = arrModel[i]
             let btn = UIButton()
             btn.tag = kBtnTag_Header + i
             btn.addTarget(self, action: #selector(btnClick_header(_:)), for: .touchUpInside)
-            btn.setTitle(self.arrData_header[i], for: .normal)
+            btn.setTitle(model.name, for: .normal)
             btn.layer.borderColor = UIColor.lightGray.cgColor
             btn.layer.borderWidth = 1
             btn.layer.cornerRadius = 5
@@ -98,64 +103,11 @@ class bdNavTitleDetailView: UIView {
             }
             self.arrBtns_header.append(btn)
         }
-        
-        // cells btns
-//        self.loadData_cells(0) { [weak self] (cell0Btn0Title) in
-//            if self?.cBtnClick_Header != nil {  // init时为nil
-//                self?.cBtnClick_Header!(cell0Btn0Title)
-//            }
-//        }
-        self.loadData_cells(0, nil)
     }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc private func bgMaskViewTapAction(_ gesture:UITapGestureRecognizer) {
-        self.removeFromSuperview()
-        if self.cBgViewTap != nil {
-            self.cBgViewTap!()
-        }
-    }
-    
-    @objc private func btnClick_header(_ sender: UIButton) {
-        if sender.isSelected {
-            return
-        }
-        for btn in arrBtns_header {
-            btn.isSelected = false
-            btn.backgroundColor = UIColor.white
-            btn.layer.borderColor = UIColor.lightGray.cgColor
-        }
-        sender.isSelected = true
-        sender.backgroundColor = UIColor.red
-        sender.layer.borderColor = UIColor.red.cgColor
-        self.loadData_cells(sender.tag-kBtnTag_Header) { [weak self] (cell0Btn0Title) in
-            if self?.cBtnClick_Header != nil {
-                self?.cBtnClick_Header!(cell0Btn0Title)
-            }
-        }
-    }
-    
     
     private var bgCellsView: UIScrollView?
     
-    @objc private func loadData_cells(_ headerIndex: Int, _ cComplete:((_ cell0Btn0Title:String)->Void)?) {
-        var arrData_cells = Array<[String:Any]>()
-        if headerIndex == 0 {
-            arrData_cells = self.arrData_sub_0
-        }
-        else if headerIndex == 1 {
-            arrData_cells = self.arrData_sub_1
-        }
-        else if headerIndex == 2 {
-            arrData_cells = self.arrData_sub_2
-        }
-        else {
-            arrData_cells = self.arrData_sub_n
-        }
-        
+    func fSetArrModel_Cell(_ arrModel:[bdNavTitleDetail_SectionModel]) {
         self.bgCellsView?.removeFromSuperview()
         self.bgCellsView = nil
         self.bgCellsView = UIScrollView()
@@ -166,8 +118,7 @@ class bdNavTitleDetailView: UIView {
         let lbTitle_H: CGFloat = 21
         let lbTitle_W: CGFloat = 70
         var bgCellView_Y: CGFloat = 0
-        for dictItem in arrData_cells {
-            let arrItems = dictItem["items"] as! [String]
+        for model in arrModel {
             let marginX: CGFloat = 10
             let marginY: CGFloat = 10
             let btnH: CGFloat = 30
@@ -175,8 +126,9 @@ class bdNavTitleDetailView: UIView {
             var btnRows = 1
             var btnY = marginY
             var btnMaxX_pre: CGFloat = lbTitle_W
-            for i in 0..<arrItems.count {
-                let btnW: CGFloat = CGFloat(15 * (arrItems[i].characters.count+2))
+            for i in 0..<model.arrBtnModel!.count {
+                let modelBtn = model.arrBtnModel![i]
+                let btnW: CGFloat = CGFloat(15 * (modelBtn.name!.characters.count+2))
                 if btnMaxX_pre + marginX + btnW >= kSCREEN_WIDTH {
                     btnRows += 1
                     btnY += btnH + marginY
@@ -192,11 +144,12 @@ class bdNavTitleDetailView: UIView {
             bgCellView.frame = CGRect(x: 0, y: bgCellView_Y, width: kSCREEN_WIDTH, height: bgCellView_H)
             bgCellView_Y += bgCellView_H
             self.bgCellsView?.addSubview(bgCellView)
-            for i in 0..<arrItems.count {
+            for i in 0..<model.arrBtnModel!.count {
+                let modelBtn = model.arrBtnModel![i]
                 let btn = UIButton()
-                btn.tag = kBtnTag_Cell + i
+                btn.tag = kBtnTag_Cell + self.arrBtns_cells.count
                 btn.addTarget(self, action: #selector(btnClick_cell(_:)), for: .touchUpInside)
-                btn.setTitle(arrItems[i], for: .normal)
+                btn.setTitle(modelBtn.name, for: .normal)
                 btn.layer.borderColor = UIColor.lightGray.cgColor
                 btn.layer.borderWidth = 1
                 btn.layer.cornerRadius = 5
@@ -208,7 +161,7 @@ class bdNavTitleDetailView: UIView {
                 self.arrBtns_cells.append(btn)
             }
             
-            let strTitle = dictItem["title"] as! String
+            let strTitle = model.title!
             let lbTitle = UILabel()
             lbTitle.text = strTitle
             let lbTitle_Y: CGFloat = (bgCellView.bounds.height - lbTitle_H) / 2
@@ -237,12 +190,30 @@ class bdNavTitleDetailView: UIView {
         btn0.isSelected = true
         btn0.backgroundColor = UIColor.red
         btn0.layer.borderColor = UIColor.red.cgColor
-        if cComplete != nil {
-            cComplete!((btn0.titleLabel?.text)!)
+    }
+    
+    
+    @objc private func btnClick_header(_ sender: UIButton) {
+        if sender.isSelected {
+            return
+        }
+        for btn in arrBtns_header {
+            btn.isSelected = false
+            btn.backgroundColor = UIColor.white
+            btn.layer.borderColor = UIColor.lightGray.cgColor
+        }
+        sender.isSelected = true
+        sender.backgroundColor = UIColor.red
+        sender.layer.borderColor = UIColor.red.cgColor
+        if self.cBtnClick_Header != nil {
+            self.cBtnClick_Header!(sender.tag-kBtnTag_Header)
         }
     }
     
     @objc private func btnClick_cell(_ sender: UIButton) {
+        if sender.isSelected {
+            return
+        }
         self.removeFromSuperview()
         for btn in arrBtns_cells {
             btn.isSelected = false
@@ -253,8 +224,7 @@ class bdNavTitleDetailView: UIView {
         sender.backgroundColor = UIColor.red
         sender.layer.borderColor = UIColor.red.cgColor
         if self.cBtnClick_Cell != nil {
-            let btnTitle = sender.titleLabel?.text
-            self.cBtnClick_Cell!(btnTitle!)
+            self.cBtnClick_Cell!(sender.tag-kBtnTag_Cell)
         }
     }
     

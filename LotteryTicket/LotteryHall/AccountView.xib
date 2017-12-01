@@ -26,7 +26,7 @@
                     <color key="textColor" red="0.99611705539999995" green="0.1446940005" blue="0.14724740389999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbAccount" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nLZ-9Z-3WA">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nLZ-9Z-3WA">
                     <rect key="frame" x="55" y="7" width="100" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="x3f-uX-z6O"/>
@@ -46,7 +46,7 @@
                     <color key="textColor" red="0.99611705539999995" green="0.1446940005" blue="0.14724740389999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbBalance" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P7d-YX-7FC" userLabel="Lb Balance">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P7d-YX-7FC" userLabel="Lb Balance">
                     <rect key="frame" x="242" y="7" width="100" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="AUf-ta-6j8"/>

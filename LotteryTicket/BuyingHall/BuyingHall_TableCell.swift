@@ -24,6 +24,9 @@ class BuyingHall_TableCell: UITableViewCell {
     //var cNumberTrend: ((_ cell: BuyingHall_TableCell)->())?
     var cPrizeDetail: ((_ cell: BuyingHall_TableCell)->Void)?
     
+    var id = String()
+    var pid = String()
+    
     let imgviewIcon: UIImageView = {
         let imgview = UIImageView()
         return imgview
@@ -167,8 +170,8 @@ class BuyingHall_TableCell: UITableViewCell {
     private var timer: Timer?
     private var remainSeconds: Int = 0
     
-    func startTimer(_ model: BuyingHall_Model) {
-        self.remainSeconds = model.time_int!
+    func startTimer(_ model: BuyingHall_Cell_Model) {
+        self.remainSeconds = model.time_int ?? 0
         self.stopTimer()
         self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerAction(_:)), userInfo: nil, repeats: true)
         RunLoop.current.add(self.timer!, forMode: .commonModes)

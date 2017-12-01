@@ -8,12 +8,17 @@
 
 import UIKit
 import IQKeyboardManagerSwift
+import Reachability
+
+
+let kReach = Reachability()!
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
@@ -29,9 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         IQKeyboardManager.sharedManager().enable = true
         
+        do {
+            try kReach.startNotifier()
+        }
+        catch {
+            print("网络监测失败")
+        }
+        
         return true
     }
 
 
 }
-

@@ -11,6 +11,13 @@ import UIKit
 class BuyingDetailDescViewController: UIViewController {
 
     var selectedIndex = 0
+    var id = String()
+    var pid = String()
+    var name = String()
+    
+    var strPlayRule: String?
+    var strPrizeExample: String?
+    private var bArrDataLoaded = false
     
     let selectBtnsView: bddSelectButtonsView = {
         let view = bddSelectButtonsView()
@@ -49,6 +56,36 @@ class BuyingDetailDescViewController: UIViewController {
             make.left.right.equalToSuperview()
             make.height.equalTo(bddSelectButtonsView.height)
         }
+        
+        self.view.addSubview(self.tvPlayRule)
+        self.tvPlayRule.snp.makeConstraints { (make) in
+            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.bottom.equalToSuperview().offset(-10)
+        }
+        self.tvPlayRule.isHidden = true
+        self.tvPlayRule.text = self.strPlayRule
+        
+        self.view.addSubview(self.tvPrizeExample)
+        self.tvPrizeExample.snp.makeConstraints { (make) in
+            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.bottom.equalToSuperview().offset(-10)
+        }
+        self.tvPrizeExample.isHidden = true
+        self.tvPrizeExample.text = self.strPrizeExample
+        
+        self.view.addSubview(self.viewPrizeDetail)
+        self.viewPrizeDetail.snp.makeConstraints { (make) in
+            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
+            make.left.equalToSuperview().offset(5)
+            make.right.equalToSuperview().offset(-5)
+            make.bottom.equalToSuperview().offset(-5)
+        }
+        self.viewPrizeDetail.isHidden = true
+        
         self.selectBtnsView.cBtnClick = { [weak self] (index, btnTitle) in
             self?.title = btnTitle
             if index == 0 {
@@ -65,40 +102,14 @@ class BuyingDetailDescViewController: UIViewController {
                 self?.tvPlayRule.isHidden = true
                 self?.tvPrizeExample.isHidden = true
                 self?.viewPrizeDetail.isHidden = false
+                if !(self?.bArrDataLoaded)! {
+                    PrizeDetail_ViewModel().getData((self?.pid)!, self?.navigationController?.view) { [weak self] (arrModels) in
+                        self?.bArrDataLoaded = true
+                        self?.viewPrizeDetail.arrModel = arrModels
+                        self?.viewPrizeDetail.reloadData()
+                    }
+                }
             }
-        }
-        
-        self.view.addSubview(self.tvPlayRule)
-        self.tvPlayRule.snp.makeConstraints { (make) in
-            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview().offset(-10)
-            make.bottom.equalToSuperview().offset(-10)
-        }
-        self.tvPlayRule.isHidden = true
-        self.tvPlayRule.text = "于任一位上的0~9选择1个号码、2个号码或多个号码，只要当期开奖结果与所选号码相同且位置一致时，即为中奖。"
-        
-        self.view.addSubview(self.tvPrizeExample)
-        self.tvPrizeExample.snp.makeConstraints { (make) in
-            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview().offset(-10)
-            make.bottom.equalToSuperview().offset(-10)
-        }
-        self.tvPrizeExample.isHidden = true
-        self.tvPrizeExample.text = "如单买万位，选择号码为2，当期开奖结果为2xxxx,即中奖（x=0~9任一数）"
-        
-        self.view.addSubview(self.viewPrizeDetail)
-        self.viewPrizeDetail.snp.makeConstraints { (make) in
-            make.top.equalTo(self.selectBtnsView.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(5)
-            make.right.equalToSuperview().offset(-5)
-            make.bottom.equalToSuperview().offset(-5)
-        }
-        self.viewPrizeDetail.isHidden = true
-        PrizeDetail_ViewModel().getData { [weak self] (arrModels) in
-            self?.viewPrizeDetail.arrModel = arrModels
-            self?.viewPrizeDetail.reloadData()
         }
     }
     

@@ -15,7 +15,7 @@ class bdNavTitleView: UIView {
         btn.frame = CGRect(x: 0, y: 0, width: 200, height: kNAVIGATION_HEIGHT)
         btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
-        btn.setTitle("变化的title", for: .normal)
+        btn.setTitle("--", for: .normal)
         btn.setImage(UIImage(named: "btn_arrow_down"), for: .normal)
         btn.setImage(UIImage(named: "btn_arrow_up"), for: .selected)  // 无动画效果
         // *_* frame

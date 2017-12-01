@@ -13,7 +13,7 @@ class bdContentView: UIView {
         return view
     } ()
     
-    let tableView: bdContentTableView = {
+    let bdcTableView: bdContentTableView = {
         let view = bdContentTableView()
         return view
     } ()
@@ -28,8 +28,8 @@ class bdContentView: UIView {
             make.left.right.equalToSuperview()
             make.height.equalTo(60)
         }
-        self.addSubview(self.tableView)
-        self.tableView.snp.makeConstraints { (make) in
+        self.addSubview(self.bdcTableView)
+        self.bdcTableView.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
             make.top.equalTo(self.topView.snp.bottom).offset(5)
             make.bottom.equalToSuperview().offset(-5)

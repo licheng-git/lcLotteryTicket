@@ -10,50 +10,54 @@ import UIKit
 
 class SelectButtonsView: UIScrollView {
     
-    let arrData = [ "热门彩种", "时时彩", "11选5", "快3", "福彩3D", "排列5", "PK10", "六合彩" ]
-    
     var cBtnClick: ((_ index:Int)->())?
     
     var defaultClickedIndex = 0
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = kBgColorGray
-    }
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//    }
+//
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
-        let btnW: CGFloat = 80
-        var btnX: CGFloat = 0
-        var btnDefault: UIButton?
-        for i in 0..<arrData.count {
-            let btn = UIButton(type: .custom)
-            btn.setTitle(arrData[i], for: .normal)
-            btn.setTitleColor(UIColor.darkText, for: .normal)
-            btn.setTitleColor(UIColor.red, for: .selected)
-            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-            btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
-            btn.tag = i
-            btnX = 10 + btnW * CGFloat(i)
-            btn.frame = CGRect(x: btnX, y: 0, width: btnW, height: rect.height)
-            btn.backgroundColor = UIColor.clear
-            self.addSubview(btn)
-            if i == defaultClickedIndex {
-                btnDefault = btn
+    //let arrData = [ "热门彩种", "时时彩", "11选5", "快3", "福彩3D", "排列5", "PK10", "六合彩" ]
+    var arrData: [String]? = nil {
+        didSet {
+            if arrData == nil {
+                return
             }
+            self.backgroundColor = kBgColorGray
+            self.layoutIfNeeded()
+            let btnW: CGFloat = 80
+            var btnX: CGFloat = 0
+            var btnDefault: UIButton?
+            for i in 0..<arrData!.count {
+                let btn = UIButton(type: .custom)
+                btn.setTitle(arrData![i], for: .normal)
+                btn.setTitleColor(UIColor.darkText, for: .normal)
+                btn.setTitleColor(UIColor.red, for: .selected)
+                btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+                btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
+                btn.tag = i
+                btnX = 10 + btnW * CGFloat(i)
+                btn.frame = CGRect(x: btnX, y: 0, width: btnW, height: self.frame.height)
+                btn.backgroundColor = UIColor.clear
+                self.addSubview(btn)
+                if i == defaultClickedIndex {
+                    btnDefault = btn
+                }
+            }
+            if btnDefault != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
+                    self.btnClick(btnDefault!)
+                })
+            }
+            let contentSize_W = 20 + btnW * CGFloat(arrData!.count)
+            self.contentSize = CGSize(width: contentSize_W, height: self.frame.height)
+            //self.showsHorizontalScrollIndicator = false
         }
-        if btnDefault != nil {
-            DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
-                self.btnClick(btnDefault!)
-            })
-        }
-        let contentSize_W = 20 + btnW * CGFloat(arrData.count)
-        self.contentSize = CGSize(width: contentSize_W, height: rect.height)
-        //self.showsHorizontalScrollIndicator = false
     }
     
     @objc private func btnClick(_ sender: UIButton) {

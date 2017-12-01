@@ -10,6 +10,9 @@ class bdNavRight_TableCell: UITableViewCell {
     
     static let cHeight: CGFloat = 60
     
+    var id = String()
+    var pid = String()
+    
     let imgviewIcon: UIImageView = {
         let imgview = UIImageView()
         return imgview

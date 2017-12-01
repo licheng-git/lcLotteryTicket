@@ -7,11 +7,17 @@
 //
 
 
-class BuyingHall_Model: NSObject {
+class BuyingHall_Cell_Model: NSObject {
+    var id: String?
+    var pid: String?
     var iconImgName: String?
     var name: String?
-    //var description: String?
     var desc: String?
     var time_int: Int?
     var time_string: String?
+}
+
+class BuyingHall_Model: NSObject {
+    var title: String?
+    var arrCellModel: [BuyingHall_Cell_Model]?
 }

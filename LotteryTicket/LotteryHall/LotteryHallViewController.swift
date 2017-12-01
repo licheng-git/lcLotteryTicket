@@ -11,6 +11,8 @@ import SnapKit
 
 class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    let vm = LotteryHall_ViewModel()
+    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: kSCREEN_WIDTH/3-1, height: 100)
@@ -50,30 +52,6 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
         let view = arr![0] as! AccountView
         return view
     } ()
-    
-    let arrData = [ ["name":"分分彩", "items": [ ["text":"极速时时彩", "img":"icon_ssc"],
-                                                    ["text":"好运11选5", "img":"icon_11x5"],
-                                                    ["text":"极速快三", "img":"icon_k3"],
-                                                    ["text":"极速飞车", "img":"icon_pk10"],
-                                                    ["text":"极速六合彩", "img":"icon_lhc"]
-        ]
-        ],
-                    ["name":"官方彩", "items":[ ["text":"天津时时彩", "img":"icon_ssc"],
-                                                   ["text":"重庆时时彩", "img":"icon_ssc"],
-                                                   ["text":"新疆时时彩", "img":"icon_ssc"],
-                                                   ["text":"山东11选5", "img":"icon_11x5"],
-                                                   ["text":"江苏11选5", "img":"icon_11x5"],
-                                                   ["text":"江西11选5", "img":"icon_11x5"],
-                                                   ["text":"广东11选5", "img":"icon_11x5"],
-                                                   ["text":"湖北快3", "img":"icon_k3"],
-                                                   ["text":"安徽快3", "img":"icon_k3"],
-                                                   ["text":"江苏快3", "img":"icon_k3"],
-                                                   ["text":"福彩3D", "img":"icon_3d"],
-                                                   ["text":"排列5", "img":"icon_pl5"],
-                                                   ["text":"北京PK10", "img":"icon_pk10"]
-                        ]
-        ]
-    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,37 +115,51 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
             make.bottom.equalToSuperview().offset(-kBOTTOM_HEIGHT)
         }
         
-        self.runningTipView.lbText.text = "卡司秀[CS]官方彩票系统正式与PK平台携手运营 哈哈嘿嘿吼吼卡卡"
+        self.runningTipView.lbText.text = "----"
         self.runningTipView.lbText.sizeToFit()
         self.runningTipView.keepRunning()
-        
-        self.accountView.lbAccount.text = "licheng"
-        self.accountView.lbBalance.text = "100.00"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.collectionView.visibleCells.count == 0 {
+            if kArrModels_LotteryHall.count == 0 {
+                let delegateView = self.tabBarController?.navigationController?.view
+                self.vm.getData_List(delegateView, { [weak self] (arrModels) in
+                    self?.collectionView.reloadData()
+                    }, nil)
+            }
+            else {
+                self.collectionView.reloadData()
+            }
+        }
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return self.arrData.count
+        return kArrModels_LotteryHall.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let arrItems = self.arrData[section]["items"] as! [Any]
-        return arrItems.count
+        return kArrModels_LotteryHall[section].arrCellModels!.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cellIdentifier = "Cell"
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! LotteryHall_CollectionCell
-        let arrItems = self.arrData[indexPath.section]["items"] as! [Any]
-        let dictItem = arrItems[indexPath.row] as! [String:String]
-        cell.lbName.text = dictItem["text"]
-        cell.imgviewIcon.image = UIImage(named: dictItem["img"]!)
+        let model = kArrModels_LotteryHall[indexPath.section].arrCellModels![indexPath.row]
+        cell.id = model.id!
+        cell.pid = model.pid!
+        cell.lbName.text = model.name
+        cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! LotteryHall_CollectionCell
         let vc = BuyingDetailViewController()
-        vc.detailId = cell.lbName.text!
+        vc.id = cell.id
+        vc.pid = cell.pid
+        vc.name = cell.lbName.text!
         self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
         //self.tabBarController?.navigationController?.pushViewController(TimerTestViewController(), animated: true)
     }
@@ -179,7 +171,7 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerIdentifier = "SectionHeader"
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerIdentifier, for: indexPath) as! LotteryHall_CollectionSectionHeaderView
-        header.lbName.text = self.arrData[indexPath.section]["name"] as? String
+        header.lbName.text = kArrModels_LotteryHall[indexPath.section].category
         return header
     }
     
