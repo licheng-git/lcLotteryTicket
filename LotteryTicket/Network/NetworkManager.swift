@@ -26,31 +26,42 @@ class NetworkManager {
                  _ cSuccess:@escaping (_ dictJson_data:Any)->Void,
                  _ cFailure:((_ msg:String?)->Void)?) {
         
+        var hud: MBProgressHUD?
+        
         if !kReach.isReachable {
             if delegateView != nil {
-                let hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
-                hud.mode = .text
-                hud.label.text = "请检查网络连接"
-                hud.hide(animated: true, afterDelay: 1.0)
+                hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
+                hud?.mode = .text
+                hud?.label.text = "请检查网络连接"
+                hud?.backgroundView.backgroundColor = UIColor.black
+                hud?.backgroundView.alpha = 0.5
+                hud?.hide(animated: true, afterDelay: 1.0)
             }
             if cFailure != nil {
                 cFailure!(nil)
             }
             return
         }
+        
         if delegateView != nil {
             //MBProgressHUD.showAdded(to: delegateView!, animated: true)
-            let hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
-            hud.backgroundView.backgroundColor = UIColor.black
-            hud.backgroundView.alpha = 0.5
+            hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
+            hud?.backgroundView.backgroundColor = UIColor.black
+            hud?.backgroundView.alpha = 0.5
         }
+        
         //let manager = Alamofire.SessionManager.default
-        //manager.session.configuration.timeoutIntervalForRequest = 30
+        //manager.session.configuration.timeoutIntervalForRequest = 10
+        //manager.request(url, method: method, parameters: parameters, encoding: encoding, headers: headers).responseJSON { (dataResp) in
         Alamofire.request(url, method: method, parameters: parameters, encoding: encoding, headers: headers).responseJSON { (dataResp) in
             print("网络请求地址 \(dataResp.request!.url!.absoluteString)")
-            if delegateView != nil {
-                MBProgressHUD.hide(for: delegateView!, animated: true)
-            }
+            
+            //if delegateView != nil {
+            //    //MBProgressHUD.hide(for: delegateView!, animated: true)
+            //    MBProgressHUD.hideAllHUDs(for: delegateView!, animated: true)
+            //}
+            hud?.hide(animated: true)
+            
             dataResp.result.ifSuccess({
                 //print("网络请求成功 \(dataResp.result.value!)")
                 print("网络请求成功 \(JSON(dataResp.result.value!))")
@@ -75,10 +86,11 @@ class NetworkManager {
             dataResp.result.ifFailure {
                 print("网络请求失败 \(dataResp.result.error!)")
                 if delegateView != nil {
-                    let hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
-                    hud.mode = .text
-                    hud.label.text = "数据加载失败"
-                    hud.hide(animated: true, afterDelay: 1.0)
+                    //MBProgressHUD.hideAllHUDs(for: delegateView!, animated: true)
+                    hud = MBProgressHUD.showAdded(to: delegateView!, animated: true)
+                    hud?.mode = .text
+                    hud?.label.text = "数据加载失败"
+                    hud?.hide(animated: true, afterDelay: 1.0)
                 }
                 if cFailure != nil {
                     cFailure!("数据加载失败")

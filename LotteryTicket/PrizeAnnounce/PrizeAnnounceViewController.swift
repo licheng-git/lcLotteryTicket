@@ -33,7 +33,21 @@ class PrizeAnnounceViewController: UIViewController, UITableViewDelegate, UITabl
             make.bottom.equalToSuperview().offset(-kBOTTOM_HEIGHT)
             make.left.right.equalToSuperview()
         }
-        self.vm.getData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.paTableview.visibleCells.count == 0 {
+            if kArrModels_bdNavRight.count == 0 {
+                let delegateView = self.tabBarController?.navigationController?.view
+                ConfigLotteryData.requestLotteryList(delegateView: delegateView, cSuccess: { [weak self] in
+                    self?.paTableview.reloadData()
+                }, cFailure: nil)
+            }
+            else {
+                self.paTableview.reloadData()
+            }
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -41,7 +55,7 @@ class PrizeAnnounceViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.vm.arrModels.count
+        return kArrModels_bdNavRight.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -50,16 +64,20 @@ class PrizeAnnounceViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellId", for: indexPath) as! PrizeAnnounce_TableCell
-        let model = self.vm.arrModels[indexPath.row]
+        let model = kArrModels_bdNavRight[indexPath.row]
         cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
         cell.lbName.text = model.name!
+        cell.id = model.id!
+        cell.pid = model.pid!
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        //let cell = tableView.cellForRow(at: indexPath)
+        let cell = tableView.cellForRow(at: indexPath) as! PrizeAnnounce_TableCell
         let vc = PrizeResultViewController()
+        vc.id = cell.id
+        vc.pid = cell.pid
         self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
     }
     

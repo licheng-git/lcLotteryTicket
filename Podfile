@@ -11,6 +11,7 @@ target 'LotteryTicket' do
     pod 'SnapKit', '~> 3.0.0'    #Masonry
     pod 'IQKeyboardManagerSwift'
     pod 'FSPagerView'
+    pod 'Socket.IO-Client-Swift', '~> 11.1.3'
     
     pod 'MJRefresh'              #ESPullToRefresh
     pod 'MBProgressHUD'

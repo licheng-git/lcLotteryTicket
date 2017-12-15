@@ -8,6 +8,7 @@
 
 import JavaScriptCore
 import MBProgressHUD
+import SocketIO
 
 class BuyingDetail_ViewModel {
     
@@ -130,30 +131,18 @@ class BuyingDetail_ViewModel {
     }
     
     
-//    func jsReader() -> String {
-////        var jsStr = String()
-////        do {
-////            let jsFilePath = Bundle.main.path(forResource: "lcTest.js", ofType: nil)
-////            jsStr = try String(contentsOfFile: jsFilePath!, encoding: .utf8)
-////
-////            let jsContext = JSContext()
-////            jsContext?.exceptionHandler = { (c, exception) in
-////                print("js异常 \(String(describing: exception))")
-////                c?.exception = exception
-////            }
-////            let _ = jsContext?.evaluateScript(jsStr)
-////            let jsValue_Func = jsContext?.objectForKeyedSubscript("jsFuncTest2")
-////            let jsValue_Result = jsValue_Func?.call(withArguments: [])
-////            print("js calculate result = \(jsValue_Result!.toString())")
-////        }
-////        catch {
-////            print(error)
-////        }
-////        return jsStr
-//
+//    func jsReader() {
 //        let jsFilePath = Bundle.main.path(forResource: "lcTest.js", ofType: nil)
 //        let jsStr = try! String(contentsOfFile: jsFilePath!, encoding: .utf8)
-//        return jsStr
+//        let jsContext = JSContext()
+//        jsContext?.exceptionHandler = { (c, exception) in
+//            print("js异常 \(String(describing: exception))")
+//            c?.exception = exception
+//        }
+//        let _ = jsContext?.evaluateScript(jsStr)
+//        let jsValue_Func = jsContext?.objectForKeyedSubscript("jsFuncTest_debug")
+//        let jsValue_Result = jsValue_Func?.call(withArguments: [])
+//        //print("js calculate result = \(jsValue_Result!.toArray())")
 //    }
     
     func jsReader_BetSelector() -> JSContext {
@@ -206,29 +195,106 @@ class BuyingDetail_ViewModel {
     }
     
     
-    var arrModel_PrizeResultTable = [bdPrizeResult_Cell_Model]()
+    var websocket:SocketIOClient?
     
-    func getData_PrizeResultTable(_ cComplete:(_ arrModels:[bdPrizeResult_Cell_Model])->Void) {
-        self.arrModel_PrizeResultTable.removeAll()
-        let arrData = [ ["periodNum":"130529", "prizeNum":"72634"],
-                        ["periodNum":"130528", "prizeNum":"0"],
-                        ["periodNum":"130527", "prizeNum":"0123456789"],
-                        ["periodNum":"130526", "prizeNum":"123"],
-                        ["periodNum":"130525", "prizeNum":""] ]
-        for dictItem in arrData {
-            let model = bdPrizeResult_Cell_Model()
-            model.periodNum = dictItem["periodNum"]
-            //model.prizeNum = dictItem["prizeNum"]
-            let arrChars = Array(dictItem["prizeNum"]!)
-            var tempPrizeNum = " "
-            for i in 0..<arrChars.count {
-                let c = arrChars[i]
-                tempPrizeNum += String(c) + " "
-            }
-            model.prizeNum = tempPrizeNum
-            self.arrModel_PrizeResultTable.append(model)
+    func getData_PrizeResult(_ alias:String, _ cSuccess:@escaping (_ periodNum:String, _ prizeResult:String)->Void) {
+        let url = URL(string: URL_WebSocket)!
+        //websocket = SocketIOClient(socketURL: url)  // err
+        websocket = SocketIOClient(socketURL: url, config: [.log(false), .compress])
+        //websocket?.on("connect", callback: { [weak self] (data, ack) in
+        websocket?.on(clientEvent: .connect) { [weak self] (data, ack) in
+            print("websocket connected \(data)")
+            self?.websocket?.emit("alias", ["alias": alias])
         }
-        cComplete(self.arrModel_PrizeResultTable)
+        websocket?.on(clientEvent: .error) { (data, ack) in
+            print("websocket error \(data)")
+        }
+        websocket?.on("reconnect") { [weak self] (data, ack) in
+            print("websocket reconnect \(data)")
+            self?.websocket?.emit("fetch_lottery_result", ["alias": alias])
+        }
+        websocket?.on(alias) { (data, ack) in
+            print("websocket onReceive_\(alias) \(data)")
+            let dictData0 = data[0] as! [String:Any]
+            let dictList = dictData0["data"] as! [[String:Any]]
+            let dictItem0 = dictList[0]
+            let periodNum = dictItem0["number"] as! String
+            let prizeResult = dictItem0["result"] as! String
+            cSuccess(periodNum, prizeResult)
+        }
+        websocket?.connect()
+    }
+    
+//    func getData_PrizeResult_js() {
+//        let jsContext = JSContext()
+//        jsContext?.exceptionHandler = { (c, exception) in
+//            print("js异常 \(String(describing: exception))")
+//            c?.exception = exception
+//        }
+//        let jsFilePath_framework = Bundle.main.path(forResource: "socket.js", ofType: nil)  // *_* js异常
+//        let jsStr_framework = try! String(contentsOfFile: jsFilePath_framework!, encoding: .utf8)
+//        let _ = jsContext?.evaluateScript(jsStr_framework)
+//        let jsFilePath_business = Bundle.main.path(forResource: "dbPrizeResult.js", ofType: nil)
+//        let jsStr_business = try! String(contentsOfFile: jsFilePath_business!, encoding: .utf8)
+//        let _ = jsContext?.evaluateScript(jsStr_business)
+//
+//        let cFunc_WebsocketReceived: @convention(block) ()->() = {
+//            let arrArgs = JSContext.currentArguments() ?? [Any]()
+//            //for arg in arrArgs {
+//            //    print("iOS*_* \(arg)")
+//            //}
+//            print("websocket onReceive \(arrArgs[0])")
+//        }
+//        jsContext?.setObject(cFunc_WebsocketReceived, forKeyedSubscript: "iosFunc_WebsocketReceived" as NSCopying & NSObjectProtocol)
+//
+//        let jsValue_Func = jsContext?.objectForKeyedSubscript("jsWebsocketConnect")
+//        let jsValue_Result = jsValue_Func?.call(withArguments: [])
+//        print("jsValue_Result = \(jsValue_Result!.toString())")
+//    }
+    
+    func getData_Timer(_ alias:String, _ delegateView:UIView?, _ cSuccess:@escaping (_ model:bdTimer_Model)->Void) {
+        let url_timer = URL_Timer + alias
+        NetworkManager().request(url_timer, method: .get, delegateView, { (dictJson_data) in
+            let sData = dictJson_data as! [String:Any]
+            let model = bdTimer_Model()
+            model.countdown = sData["countdown"] as? Int
+            model.currentNumber = sData["currentNumber"] as? String
+            model.sellNumber = sData["sellNumber"] as? String
+            cSuccess(model)
+        }, nil)
+    }
+    
+    func getData_PrizeResultTable(_ alias:String, _ delegateView:UIView?, _ cSuccess:@escaping (_ arrModel:[bdPrizeResult_Cell_Model])->Void) {
+        let url_PrizeHistory = URL_PrizeHistory + alias
+        NetworkManager().request(url_PrizeHistory, method: .get, delegateView, { (dictJson_data) in
+            let sData = dictJson_data as! [[String:Any]]
+            var arrModel = [bdPrizeResult_Cell_Model]()
+            for sItem in sData {
+                let model = bdPrizeResult_Cell_Model()
+                //model.periodNum = sItem["number"] as? String
+                let tempNumber = sItem["number"] as! String
+                let si = tempNumber.index(tempNumber.startIndex, offsetBy: 4)
+                model.periodNum = tempNumber.substring(from: si)
+                //model.prizeNum = sItem["result"] as? String
+                //let arrResult = Array(sItem["result"] as! String)
+                let arrResult = (sItem["result"] as! String).split(separator: ",")
+                var tempResult = " "
+                for i in 0..<arrResult.count {
+                    let c = arrResult[i]
+                    tempResult += String(c) + " "
+                }
+                model.prizeNum = tempResult
+                arrModel.append(model)
+            }
+            cSuccess(arrModel)
+        }, nil)
+    }
+    
+    
+    deinit {
+        print("BuyingDetail_ViewModel deinit")
+        self.websocket?.disconnect()
+        self.websocket = nil
     }
     
 }

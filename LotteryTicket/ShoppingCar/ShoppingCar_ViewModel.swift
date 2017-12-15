@@ -10,4 +10,6 @@ class ShoppingCar_ViewModel {
     
     var arrModel = [ShoppingCar_Cell_Model]()
     
+    
+    
 }

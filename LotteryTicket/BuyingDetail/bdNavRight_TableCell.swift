@@ -12,6 +12,7 @@ class bdNavRight_TableCell: UITableViewCell {
     
     var id = String()
     var pid = String()
+    var alias = String()
     
     let imgviewIcon: UIImageView = {
         let imgview = UIImageView()

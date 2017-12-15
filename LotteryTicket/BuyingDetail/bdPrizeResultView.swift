@@ -80,7 +80,8 @@ class bdPrizeResultView: UIView {
         for v in self.bgResultView.subviews {
             v.removeFromSuperview()
         }
-        let arrChars = Array(strResult)
+        //let arrChars = Array(strResult)
+        let arrChars = strResult.split(separator: ",")
         let w: CGFloat = 30
         for i in 0..<arrChars.count {
             let c = arrChars[i]

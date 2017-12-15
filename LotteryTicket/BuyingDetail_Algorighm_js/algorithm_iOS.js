@@ -509,14 +509,6 @@ const arrangementAlgorithm = function(arr) {
  * @returns {{numbers: number, amount: number}}
  */
 function runCalculate(playingMessage, orderMessage) {
-//    const { bettingPattern, multiple, bettingPos: {pos: selectedCodes} } = orderMessage,
-//         betInfo = {
-//                numbers: 0,
-//                amount : 0
-//            },
-//        curBonusMultiple = getBonusMultiple(bettingPattern),
-//        sourceCodes      = generateCodes(playingMessage.area, selectedCodes),
-//        {playing : playingFunction}  = playingMessage;
     const bettingPattern = orderMessage.bettingPattern, multiple = orderMessage.multiple, selectedCodes = orderMessage.bettingPos.pos,
         betInfo = {
             numbers: 0,

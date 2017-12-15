@@ -12,6 +12,7 @@ class BuyingHall_Cell_Model: NSObject {
     var pid: String?
     var iconImgName: String?
     var name: String?
+    var alias: String?  
     var desc: String?
     var time_int: Int?
     var time_string: String?

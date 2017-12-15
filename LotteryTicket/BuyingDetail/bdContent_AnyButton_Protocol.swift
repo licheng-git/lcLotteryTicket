@@ -1,5 +1,5 @@
 //
-//  bdContent_AnyButton_Delegate.swift
+//  bdContent_AnyButton_Protocol.swift
 //  LotteryTicket
 //
 //  Created by Cheng Li on 2017/11/30.

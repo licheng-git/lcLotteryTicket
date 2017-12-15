@@ -9,6 +9,7 @@
 var kArrModels_LotteryHall = Array<LotteryHall_Model>()
 var kArrModels_BuyingHall  = Array<BuyingHall_Model>()
 var kArrModels_bdNavRight  = Array<bdNavRightTable_Cell_Model>()
+//var kArrModels_PrizeAnnounce = [PrizeAnnounce_Cell_Model]()
 
 class ConfigLotteryData {
     
@@ -35,6 +36,7 @@ class ConfigLotteryData {
                     modelCell.id = (sItem["_id"] as! [String:String])["$oid"]
                     modelCell.pid = sItem["pid"] as? String
                     modelCell.name = sItem["name"] as? String
+                    modelCell.alias = sItem["alias"] as? String
                     modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)
                     let cate = sItem["lottery_cate"] as? String
                     if cate == "ffc60" {
@@ -50,6 +52,7 @@ class ConfigLotteryData {
                         modelCell.id = (sChild["_id"] as! [String:String])["$oid"]
                         modelCell.pid = sChild["pid"] as? String
                         modelCell.name = sChild["name"] as? String
+                        modelCell.alias = sChild["alias"] as? String
                         //modelCell.iconImgName = self.imgnameConvert(sChild["alias"] as! String)
                         modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)  // 子节点与父节点图标一样名称不一样
                         let cate = sChild["lottery_cate"] as? String
@@ -78,6 +81,7 @@ class ConfigLotteryData {
                     modelCell.id = (sItem["_id"] as! [String:String])["$oid"]
                     modelCell.pid = sItem["pid"] as? String
                     modelCell.name = sItem["name"] as? String
+                    modelCell.alias = sItem["alias"] as? String
                     modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)
                     bhModel.arrCellModel?.append(modelCell)
                     if sItem["is_hot"] as! NSNumber == 1 {
@@ -90,6 +94,7 @@ class ConfigLotteryData {
                         modelCell.id = (sChild["_id"] as! [String:String])["$oid"]
                         modelCell.pid = sChild["pid"] as? String
                         modelCell.name = sChild["name"] as? String
+                        modelCell.alias = sChild["alias"] as? String
                         modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)
                         bhModel.arrCellModel?.append(modelCell)
                         if sChild["is_hot"] as! Int == 1 {
@@ -112,6 +117,7 @@ class ConfigLotteryData {
                     modelCell.id = (sItem["_id"] as! [String:String])["$oid"]
                     modelCell.pid = sItem["pid"] as? String
                     modelCell.name = sItem["name"] as? String
+                    modelCell.alias = sItem["alias"] as? String
                     modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)
                     kArrModels_bdNavRight.append(modelCell)
                 }
@@ -121,6 +127,7 @@ class ConfigLotteryData {
                         modelCell.id = (sChild["_id"] as! [String:String])["$oid"]
                         modelCell.pid = sChild["pid"] as? String
                         modelCell.name = sChild["name"] as? String
+                        modelCell.alias = sChild["alias"] as? String
                         modelCell.iconImgName = ConfigLotteryData.imgnameConvert(sItem["alias"] as! String)
                         kArrModels_bdNavRight.append(modelCell)
                     }

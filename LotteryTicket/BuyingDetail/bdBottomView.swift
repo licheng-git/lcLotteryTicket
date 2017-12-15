@@ -330,7 +330,7 @@ class bdBottomView: UIView, UITextFieldDelegate {
     weak var delegate: bdContent_AnyButton_Delegate?
     
     @objc private func btnAction_tf(_ sender: UIButton) {
-        if (self.tfInput.text?.isEmpty)! {
+        if self.tfInput.text == nil || self.tfInput.text!.isEmpty {
             self.tfInput.text = "1"
             //return
         }
@@ -418,7 +418,7 @@ class bdBottomView: UIView, UITextFieldDelegate {
     
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if (self.tfInput.text?.isEmpty)! {
+        if self.tfInput.text == nil || self.tfInput.text!.isEmpty {
             self.tfInput.text = "1"
         }
         else {

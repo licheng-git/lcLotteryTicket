@@ -101,6 +101,7 @@ class bdNavRightTableView: UIView, UITableViewDelegate, UITableViewDataSource {
         let model = kArrModels_bdNavRight[indexPath.row]
         cell.id = model.id!
         cell.pid = model.pid!
+        cell.alias = model.alias!
         cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
         cell.lbName.text = model.name
         if indexPath.row == 0 {

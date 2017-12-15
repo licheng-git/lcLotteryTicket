@@ -14,6 +14,7 @@ class BuyingDetailViewController: UIViewController {
     var id = String()
     var pid = String()
     var name = String()
+    var alias = String()  
     
     let vm = BuyingDetail_ViewModel()
     
@@ -46,10 +47,6 @@ class BuyingDetailViewController: UIViewController {
         let view = bdPrizeResultTableView()
         return view
     } ()
-//    let prizeResultWebView: UIWebView = {
-//        let webview = UIWebView()
-//        return webview
-//    } ()
     
     let contentView: bdContentView = {
         let view = bdContentView()
@@ -98,21 +95,6 @@ class BuyingDetailViewController: UIViewController {
             make.left.right.equalToSuperview()
             make.height.equalTo(bdTimerView.Height)
         }
-        self.timerView.lbTitle.text = self.name
-        self.timerView.lbPeriodNum.text = "--期"
-        //self.timerView.startTimer(80)
-        self.timerView.cCountToZero = { [weak self] (currentPeriodNum) in
-            let hud = MBProgressHUD.showAdded(to: (self?.view)!, animated: true)
-            hud.mode = .text
-            hud.label.text = "温馨提示"
-            hud.detailsLabel.text = "当前为" + currentPeriodNum + ",投注时请注意期数"
-            hud.backgroundView.backgroundColor = UIColor.darkGray
-            hud.backgroundView.alpha = 0.5
-            hud.hide(animated: true, afterDelay: 3.0)
-            hud.completionBlock = {
-                self?.timerView.startTimer(10000)
-            }
-        }
         
         self.view.addSubview(self.prizeResultView)
         self.prizeResultView.snp.makeConstraints { (make) in
@@ -120,8 +102,6 @@ class BuyingDetailViewController: UIViewController {
             make.left.right.equalToSuperview()
             make.height.equalTo(bdPrizeResultView.headerHeight)
         }
-        self.prizeResultView.lbPeriodNum.text = "------期开奖号码"
-        self.prizeResultView.fSetResult("------")
         self.prizeResultView.cToggle = { [weak self] (bIsShowing) in
             if bIsShowing {
                 UIView.animate(withDuration: 0.5, animations: {
@@ -145,12 +125,23 @@ class BuyingDetailViewController: UIViewController {
         self.prizeResultTableView.snp.makeConstraints { (make) in
             make.top.equalTo(self.prizeResultView.snp.bottom)
             make.left.right.equalToSuperview()
-            make.height.equalTo(bdPrizeResult_TableCell.cHeight*6)
+            //make.height.equalTo(bdPrizeResult_TableCell.cHeight*6.5)
+            make.bottom.equalToSuperview().offset(-bdBottomView.height)
         }
-        self.vm.getData_PrizeResultTable { [weak self] (arrModel) in
-            self?.prizeResultTableView.arrModel = arrModel
-            self?.prizeResultTableView.reloadData()
-        }
+//        self.view.layoutIfNeeded()
+//        var tempFrame = CGRect(x: 0, y: self.prizeResultView.frame.maxY, width: kSCREEN_WIDTH, height: bdPrizeResult_TableCell.cHeight*6.5)
+//        let spaceAvailable = kSCREEN_HEIGHT - tempFrame.minY - bdBottomView.height
+//        let spaceNeed = bdPrizeResult_TableCell.cHeight * 11
+//        if spaceAvailable > spaceNeed {
+//            tempFrame.size.height = spaceNeed
+//            self.prizeResultTableView.frame = tempFrame
+//            self.prizeResultTableView.isScrollEnabled = false
+//        }
+//        else {
+//            tempFrame.size.height = spaceAvailable
+//            self.prizeResultTableView.frame = tempFrame
+//            self.prizeResultTableView.isScrollEnabled = true
+//        }
 
 //        self.view.addSubview(self.contentView)
 //        self.contentView.snp.makeConstraints { (make) in
@@ -159,7 +150,6 @@ class BuyingDetailViewController: UIViewController {
 //            make.bottom.equalToSuperview().offset(-bdBottomView.height)
 //        }
         self.view.layoutIfNeeded()
-        //print(self.prizeResultView.frame.maxY)
         self.contentView.frame = CGRect(x: 0, y: self.prizeResultView.frame.maxY, width: kSCREEN_WIDTH, height: kSCREEN_HEIGHT-self.prizeResultView.frame.maxY-bdBottomView.height)
         self.view.addSubview(self.contentView)
         self.contentView.topView.cClick = { [weak self] (index) in
@@ -188,6 +178,42 @@ class BuyingDetailViewController: UIViewController {
         }
         
         
+        self.timerView.lbTitle.text = self.name
+        self.timerView.cCountToZero = { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
+                self?.vm.getData_Timer((self?.alias)!, nil) { [weak self] (model) in
+                    self?.timerView.lbPeriodNum.text = model.sellNumber! + "期"
+                    if model.countdown == nil {
+                        return
+                    }
+                    self?.timerView.startTimer(model.countdown!)
+                    if model.countdown! == 0 {
+                            return
+                    }
+                    let hud = MBProgressHUD.showAdded(to: (self?.view)!, animated: true)
+                    hud.mode = .text
+                    hud.label.text = "温馨提示"
+                    hud.detailsLabel.text = "当前为" + model.sellNumber! + ",投注时请注意期数"
+                    hud.backgroundView.backgroundColor = UIColor.black
+                    hud.backgroundView.alpha = 0.5
+                    hud.hide(animated: true, afterDelay: 3.0)
+                }
+            })
+        }
+        //self.timerView.startTimer(0)
+        self.timerView.cCountToZero!()
+        
+//        //self.vm.getData_PrizeResult(self.alias) { [weak self] (periodNum, prizeResult) in
+//        self.vm.getData_PrizeResult("cqssc") { [weak self] (periodNum, prizeResult) in
+//            self?.prizeResultView.lbPeriodNum.text = periodNum + "期开奖号码"
+//            self?.prizeResultView.fSetResult(prizeResult)
+//        }
+        
+        self.vm.getData_PrizeResultTable(self.alias, nil) { [weak self] (arrModel) in
+            self?.prizeResultTableView.arrModel = arrModel
+            self?.prizeResultTableView.reloadData()
+        }
+        
         //let cSuccess_NavTitleDetail_Header:(([bdNavTitleDetail_BtnModel]) -> Void) = { [weak self] (_ arrModel_Header:[bdNavTitleDetail_BtnModel]) in
         let cSuccess_NavTitleDetail_Header = { [weak self] (_ arrModel:[bdNavTitleDetail_BtnModel]) -> () in
             self?.navTitleDetailView.fSetArrModel_Header(arrModel)
@@ -204,7 +230,6 @@ class BuyingDetailViewController: UIViewController {
             self?.contentView.bdcTableView.model = model
             self?.contentView.bdcTableView.reloadData()
             self?.contentView.bdcTableView.fSetHeader_SpecialPlaying()
-            
         }
         self.vm.getData_All(self.id, self.pid, self.navigationController?.view,
                             cSuccess_NavTitleDetail_Header,
@@ -241,15 +266,20 @@ class BuyingDetailViewController: UIViewController {
         self.navRightTableView.cCellSelect = { [weak self] (cell) in
             self?.id = cell.id
             self?.pid = cell.pid
+            self?.alias = cell.alias
             self?.name = cell.lbName.text!
             self?.timerView.lbTitle.text = self?.name
+            self?.timerView.cCountToZero?()
+            
             self?.vm.getData_All((self?.id)!, (self?.pid)!, self?.navigationController?.view,
                                  cSuccess_NavTitleDetail_Header,
                                  cSuccess_NavTitleDetail_Cell,
                                  cSuccess_Content)
             
-            //self?.vm.arrModel_ShoppingCar.removeAll()
+            self?.vm.arrModel_ShoppingCar.removeAll()
             self?.bottomView.fResetData()
+            self?.bottomView.btnBetting_Directly.isHidden = false
+            self?.bottomView.btnBetting_GoToShoppingCar.isHidden = true
         }
         
         self.bottomView.cBtnAction_AddShoppingCar = { [weak self] in
@@ -299,14 +329,13 @@ class BuyingDetailViewController: UIViewController {
             self?.navigationController?.pushViewController(vc, animated: true)
         }
         self.bottomView.delegate = self
-        
     }
     
     
     @objc private func navItemClick_Right(_ sender: UIBarButtonItem) {
         self.navTitleDetailView.removeFromSuperview()
         self.navTitleView.btnTitle.isSelected = false
-        
+
         if self.navRightTableView.bIsShowing {
             self.navRightTableView.remove()
         }

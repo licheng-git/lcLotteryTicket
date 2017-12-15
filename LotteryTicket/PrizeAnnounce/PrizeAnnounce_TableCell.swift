@@ -13,6 +13,9 @@ class PrizeAnnounce_TableCell: UITableViewCell {
     
     static let paHeight: CGFloat = 70
     
+    var id = String()
+    var pid = String()
+    
     let imgviewIcon: UIImageView = {
         let imgview = UIImageView()
         return imgview

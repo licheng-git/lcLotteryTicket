@@ -11,11 +11,7 @@ class bdNavRightTable_Cell_Model: NSObject {
     var pid: String?
     var iconImgName: String?
     var name: String?
-}
-
-class bdPrizeResult_Cell_Model: NSObject {
-    var periodNum: String?
-    var prizeNum: String?
+    var alias: String?
 }
 
 
@@ -28,6 +24,18 @@ class bdNavTitleDetail_BtnModel: NSObject {
 class bdNavTitleDetail_SectionModel: NSObject {
     var title:String?
     var arrBtnModel: [bdNavTitleDetail_BtnModel]?
+}
+
+
+class bdTimer_Model:NSObject {
+    var countdown: Int?
+    var currentNumber: String?
+    var sellNumber: String?
+}
+
+class bdPrizeResult_Cell_Model: NSObject {
+    var periodNum: String?
+    var prizeNum: String?
 }
 
 

@@ -24,7 +24,7 @@ class bdTimerView: UIView {
         return lb
     } ()
     
-    lazy var lbHours: UILabel = {
+    private lazy var lbHours: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.font = UIFont.systemFont(ofSize: 16)
@@ -33,7 +33,7 @@ class bdTimerView: UIView {
         return lb
     } ()
     
-    lazy var lbMinutes: UILabel = {
+    private lazy var lbMinutes: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.font = UIFont.systemFont(ofSize: 16)
@@ -42,7 +42,7 @@ class bdTimerView: UIView {
         return lb
     } ()
     
-    lazy var lbSeconds: UILabel = {
+    private lazy var lbSeconds: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.font = UIFont.systemFont(ofSize: 16)
@@ -161,7 +161,7 @@ class bdTimerView: UIView {
     private var timer: Timer?
     private var remainSeconds: Int = 0
     
-    var cCountToZero: ((_ currentPeriodNum: String)->Void)?
+    var cCountToZero: (()->Void)?
     
     func startTimer(_ totalSeconds: Int) {
         self.remainSeconds = totalSeconds
@@ -181,7 +181,7 @@ class bdTimerView: UIView {
         if self.remainSeconds < 0 {
             self.stopTimer()
             if self.cCountToZero != nil {
-                self.cCountToZero!(self.lbPeriodNum.text!)
+                self.cCountToZero!()
             }
         }
     }

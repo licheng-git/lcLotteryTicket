@@ -61,6 +61,8 @@ class UserCenterViewController: UIViewController, UITableViewDelegate, UITableVi
         if allCellsHeight < screenLeftHeight {
             self.ucTableview.isScrollEnabled = false
         }
+        self.headerView.lbAccount.text = UserInfo.sharedInstance.userName
+        self.headerView.lbBalance.text = UserInfo.sharedInstance.strBalance
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

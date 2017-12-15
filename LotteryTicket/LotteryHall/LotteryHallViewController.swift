@@ -115,13 +115,27 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
             make.bottom.equalToSuperview().offset(-kBOTTOM_HEIGHT)
         }
         
-        self.runningTipView.lbText.text = "----"
-        self.runningTipView.lbText.sizeToFit()
-        self.runningTipView.keepRunning()
+        AnnounceInfor_ViewModel().getData(1, 1, nil, { (arrModels_page) in
+            if arrModels_page.count == 0 {
+                //self.runningTipView.lbText.text = "----"
+                return
+            }
+            self.runningTipView.lbText.text = arrModels_page[0].title
+            self.runningTipView.lbText.sizeToFit()
+            self.runningTipView.keepRunning()
+        }) {
+            //self.runningTipView.lbText.text = "----"
+        }
+        
+        //BuyingDetail_ViewModel().jsReader()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    
+    //override func viewWillAppear(_ animated: Bool) {
+    //    super.viewWillAppear(animated)
+    //    print("*_* tabBarC.navC.pushVC")
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         if self.collectionView.visibleCells.count == 0 {
             if kArrModels_LotteryHall.count == 0 {
                 let delegateView = self.tabBarController?.navigationController?.view
@@ -133,7 +147,24 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
                 self.collectionView.reloadData()
             }
         }
+        if UserInfo.sharedInstance.token.isEmpty {
+            let navItem_right = UIBarButtonItem()
+            navItem_right.style = .plain
+            navItem_right.title = "登录"
+            navItem_right.target = self
+            navItem_right.action = #selector(navItemClick_Right(_:))
+            navItem_right.tintColor = UIColor.white
+            self.navigationItem.rightBarButtonItem = navItem_right
+            self.accountView.lbAccount.text = "--"
+            self.accountView.lbBalance.text = "--"
+        }
+        else {
+            self.navigationItem.rightBarButtonItem = nil
+            self.accountView.lbAccount.text = UserInfo.sharedInstance.userName
+            self.accountView.lbBalance.text = UserInfo.sharedInstance.strBalance
+        }
     }
+    
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return kArrModels_LotteryHall.count
@@ -150,6 +181,7 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
         cell.id = model.id!
         cell.pid = model.pid!
         cell.lbName.text = model.name
+        cell.alias = model.alias!
         cell.imgviewIcon.image = UIImage(named: model.iconImgName!)
         return cell
     }
@@ -160,8 +192,8 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
         vc.id = cell.id
         vc.pid = cell.pid
         vc.name = cell.lbName.text!
+        vc.alias = cell.alias
         self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
-        //self.tabBarController?.navigationController?.pushViewController(TimerTestViewController(), animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -173,6 +205,12 @@ class LotteryHallViewController: UIViewController, UICollectionViewDelegate, UIC
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerIdentifier, for: indexPath) as! LotteryHall_CollectionSectionHeaderView
         header.lbName.text = kArrModels_LotteryHall[indexPath.section].category
         return header
+    }
+    
+    
+    @objc private func navItemClick_Right(_ sender: UIBarButtonItem) {
+        let vc = LoginViewController()
+        self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

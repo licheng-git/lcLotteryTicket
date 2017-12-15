@@ -69,19 +69,26 @@ class PrizeResult_TableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var strResult: String? = nil {
+    var strResult: String = "" {
         didSet {
-            if (self.strResult?.isEmpty)! {
-                return
-            }
             //print("didSet \(self.strResult!) \(self.bgResultView.frame)")  // .zero
             //self.layoutIfNeeded()
             //print("didSet self.layoutIfNeed() \(self.bgResultView.frame)")  // 正常
             for v in self.bgResultView.subviews {
                 v.removeFromSuperview()
             }
-            let arrChars = Array(self.strResult!)
-            let w: CGFloat = 25
+            //let arrChars = Array(self.strResult)
+            let arrChars = self.strResult.split(separator: ",")
+            if arrChars.count == 0 {
+                let lb = UILabel()
+                lb.text = "暂未开奖"
+                self.bgResultView.addSubview(lb)
+                lb.snp.makeConstraints({ (make) in
+                    make.left.right.top.bottom.equalToSuperview()
+                })
+                return
+            }
+            let w: CGFloat = 30
             var btnPre: UIButton?
             for i in 0..<arrChars.count {
                 let c = arrChars[i]
@@ -111,29 +118,5 @@ class PrizeResult_TableCell: UITableViewCell {
             }
         }
     }
-    
-//    func fSetResult(_ strResult:String) {
-//        //print("func \(self.bgResultView.frame)")  // .zero
-//        self.layoutIfNeeded()
-//        //print("func self.layoutIfNeed() \(self.bgResultView.frame)")  // 正常
-//        for v in self.bgResultView.subviews {
-//            v.removeFromSuperview()
-//        }
-//        let arrChars = Array(strResult)
-//        let w: CGFloat = 25
-//        let y: CGFloat = (self.bgResultView.frame.height - w) / 2
-//        for i in 0..<arrChars.count {
-//            let c = arrChars[i]
-//            let strC = String(c)
-//            let btn = UIButton()
-//            btn.isEnabled = false
-//            btn.setTitle(strC, for: .normal)
-//            btn.setTitleColor(UIColor.white, for: .normal)
-//            btn.backgroundColor = UIColor.red
-//            self.bgResultView.addSubview(btn)
-//            btn.frame = CGRect(x: (w+5)*CGFloat(i), y: y, width: w, height: w)
-//            btn.layer.cornerRadius = w/2
-//        }
-//    }
     
 }

@@ -19,31 +19,7 @@ class bdPrizeResultTableView: UITableView, UITableViewDelegate, UITableViewDataS
         self.delegate = self
         self.separatorStyle = .none
         self.allowsSelection = false
-        self.isScrollEnabled = false
         self.register(bdPrizeResult_TableCell.classForCoder(), forCellReuseIdentifier: "Cell")
-        
-        let tbHeaderView = UIView()
-        tbHeaderView.backgroundColor = kBgColorGray
-        tbHeaderView.frame = CGRect(x: 0, y: 0, width: 10, height: bdPrizeResult_TableCell.cHeight)
-        self.tableHeaderView = tbHeaderView
-        let lbTitle_PeriodNum = UILabel()
-        lbTitle_PeriodNum.text = "期数"
-        lbTitle_PeriodNum.textAlignment = .center
-        lbTitle_PeriodNum.font = UIFont.systemFont(ofSize: 16)
-        tbHeaderView.addSubview(lbTitle_PeriodNum)
-        lbTitle_PeriodNum.snp.makeConstraints { (make) in
-            make.top.bottom.left.equalToSuperview()
-            make.right.equalTo(tbHeaderView.snp.centerX)
-        }
-        let lbTitle_PrizeNum = UILabel()
-        lbTitle_PrizeNum.text = "开奖号码"
-        lbTitle_PrizeNum.textAlignment = .center
-        lbTitle_PrizeNum.font = UIFont.systemFont(ofSize: 16)
-        tbHeaderView.addSubview(lbTitle_PrizeNum)
-        lbTitle_PrizeNum.snp.makeConstraints { (make) in
-            make.top.bottom.right.equalToSuperview()
-            make.left.equalTo(tbHeaderView.snp.centerX)
-        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -76,5 +52,36 @@ class bdPrizeResultTableView: UITableView, UITableViewDelegate, UITableViewDataS
         }
         return cell
     }
-
+    
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return bdPrizeResult_TableCell.cHeight
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let tbHeaderView = UIView()
+        tbHeaderView.backgroundColor = kBgColorGray
+        //tbHeaderView.frame = CGRect(x: 0, y: 0, width: 10, height: bdPrizeResult_TableCell.cHeight)
+        //self.tableHeaderView = tbHeaderView
+        let lbTitle_PeriodNum = UILabel()
+        lbTitle_PeriodNum.text = "期数"
+        lbTitle_PeriodNum.textAlignment = .center
+        lbTitle_PeriodNum.font = UIFont.systemFont(ofSize: 16)
+        tbHeaderView.addSubview(lbTitle_PeriodNum)
+        lbTitle_PeriodNum.snp.makeConstraints { (make) in
+            make.top.bottom.left.equalToSuperview()
+            make.right.equalTo(tbHeaderView.snp.centerX)
+        }
+        let lbTitle_PrizeNum = UILabel()
+        lbTitle_PrizeNum.text = "开奖号码"
+        lbTitle_PrizeNum.textAlignment = .center
+        lbTitle_PrizeNum.font = UIFont.systemFont(ofSize: 16)
+        tbHeaderView.addSubview(lbTitle_PrizeNum)
+        lbTitle_PrizeNum.snp.makeConstraints { (make) in
+            make.top.bottom.right.equalToSuperview()
+            make.left.equalTo(tbHeaderView.snp.centerX)
+        }
+        return tbHeaderView
+    }
+    
 }

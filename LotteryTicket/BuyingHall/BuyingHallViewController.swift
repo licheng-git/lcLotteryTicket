@@ -70,7 +70,6 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.selectBtnsView.arrData = self.vm.getData_SelectButtons()
             }
         }
-        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -91,6 +90,7 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
         if model != nil {
             cell.id = model!.id!
             cell.pid = model!.pid!
+            cell.alias = model!.alias!
             cell.imgviewIcon.image = UIImage(named: model!.iconImgName!)
             cell.lbName.text = model!.name
             cell.lbDescription.text = "--"
@@ -115,6 +115,7 @@ class BuyingHallViewController: UIViewController, UITableViewDelegate, UITableVi
         vc.id = cell.id
         vc.pid = cell.pid
         vc.name = cell.lbName.text!
+        vc.alias = cell.alias!
         self.tabBarController?.navigationController?.pushViewController(vc, animated: true)
     }
     

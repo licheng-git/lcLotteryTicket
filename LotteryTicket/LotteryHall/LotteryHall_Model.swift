@@ -11,6 +11,7 @@ class LotteryHall_Cell_Model: NSObject {
     var pid: String?
     var iconImgName: String?
     var name: String?
+    var alias: String?  
 }
 
 class LotteryHall_Model: NSObject {

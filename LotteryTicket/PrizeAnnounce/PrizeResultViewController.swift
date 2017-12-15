@@ -13,7 +13,9 @@ import MJRefresh
 class PrizeResultViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let vm = PrizeResult_ViewModel()
-    var currentPage = 0
+    
+    var id = String()
+    var pid = String()
     
     lazy var prTableview: UITableView = {
         let tableview = UITableView()
@@ -38,26 +40,29 @@ class PrizeResultViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         self.prTableview.mj_header = MJRefreshNormalHeader(refreshingBlock: { [weak self] in
-            self?.currentPage = 0
-            self?.vm.getData((self?.currentPage)!, {(arrModels_page) in
+            self?.vm.currentPage = 1
+            self?.vm.getData((self?.id)!, (self?.pid)!, self?.navigationController?.view, { (arrModels_page) in
                 self?.prTableview.reloadData()
                 self?.prTableview.mj_header.endRefreshing()
                 self?.prTableview.mj_footer.resetNoMoreData()
                 if arrModels_page.count < 10 {
                     self?.prTableview.mj_footer.endRefreshingWithNoMoreData()
                 }
+            }, {
+                self?.prTableview.mj_header.endRefreshing()
             })
         })
         self.prTableview.mj_footer = MJRefreshAutoNormalFooter(refreshingBlock: { [weak self] in
-            self?.currentPage += 1
             //print("currentPage = \((self?.currentPage)!)")
-            self?.vm.getData((self?.currentPage)!) { (arrModels_page) in
+            self?.vm.getData((self?.id)!, (self?.pid)!, self?.navigationController?.view, { (arrModels_page) in
                 self?.prTableview.reloadData()
                 self?.prTableview.mj_footer.endRefreshing()
                 if arrModels_page.count < 10 {
                     self?.prTableview.mj_footer.endRefreshingWithNoMoreData()
                 }
-            }
+            }, {
+                self?.prTableview.mj_footer.endRefreshing()
+            })
         })
         self.prTableview.mj_header.beginRefreshing()
     }
@@ -77,8 +82,8 @@ class PrizeResultViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellId", for: indexPath) as! PrizeResult_TableCell
         let model = self.vm.arrModels_all[indexPath.row]
-        cell.lbTitle.text = model.title
-        cell.strResult = model.result
+        cell.lbTitle.text = "第" + model.title! + "期"
+        cell.strResult = model.result!
         //cell.fSetResult(model.result!)
         if indexPath.row == 0 {
             cell.lineView_FristCell_Top.isHidden = false

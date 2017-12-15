@@ -16,7 +16,7 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     
     var url_str: String? = nil {
         didSet {
-            if (self.url_str?.isEmpty)! {
+            if self.url_str == nil || self.url_str!.isEmpty {
                 return
             }
             let url = URL(string: self.url_str!)

@@ -3,3 +3,5 @@
 //
 
 #import "ocViewController.h"
+#import "Tools_oc.h"
+#import <CommonCrypto/CommonDigest.h>

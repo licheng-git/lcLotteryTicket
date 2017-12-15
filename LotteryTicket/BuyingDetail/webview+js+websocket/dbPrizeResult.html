@@ -1,0 +1,41 @@
+<!DOCTYPE html>  
+<meta charset="utf-8" />  
+<title>WebSocket</title>
+<script src="socket.js"></script>
+<script language="javascript" type="text/javascript">
+    
+    const URL_WebSocket = "http://push.pushsystem.serverddc.com";
+    const socket = io.connect(URL_WebSocket);
+    const lotteries = "cqssc";
+    //const lotteries = "ffcSsc60";
+    socket.on('connect', function() {
+          console.log('websocket connected');
+          socket.emit('alias', { alias: lotteries });
+     }).on('reconnect', function() {
+           socket.emit('fetch_lottery_result', {alias: lotteries});
+     }).on(lotteries, function (data) {
+           console.log('websocket received');
+           console.log(new Date().toLocaleString(), socket.id, lotteries, data);
+           //alert(data + " | " + data.message + " | " + data.data[0].result);
+           document.getElementById("divContent").innerHTML += data + " | " + data.message + " | " + data.data[0].result + "<br/><br/>";
+           //iosFunc_WebsocketReceived(data);
+           //iosFunc_popVC();
+     });
+     socket.connect();
+     
+     
+     function js_popVC() {
+         console.log('js*_*');
+         var result_iOS = SwiftJavascriptBridge.iosFunc_popVC1("jsParam", 123, false, { id:1, name:"sb" });
+         return result_iOS + " + js*_*";
+     }
+
+</script>
+<body style="background-color:orange">
+<h2>WebSocket</h2>
+<button onclick="iosFunc_popVC('sb', 0)">js_popVC</button> &nbsp;&nbsp;
+<button onclick="js_popVC()">js_popVC1</button>
+<br/><br/>
+<div id="divContent"></div>
+</body>
+</html>

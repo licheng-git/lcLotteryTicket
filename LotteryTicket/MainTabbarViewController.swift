@@ -47,10 +47,16 @@ class MainTabbarViewController: UITabBarController, UITabBarControllerDelegate {
         self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
+    
+    var currentSelectedIndex = 0
+    
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        if tabBarController.selectedIndex == 3 {
-            print("登陆状态检测")
+        if tabBarController.selectedIndex == 3 && UserInfo.sharedInstance.token.isEmpty {
+            self.selectedIndex = currentSelectedIndex
+            let loginVC = LoginViewController()
+            self.navigationController?.pushViewController(loginVC, animated: true)
         }
+        currentSelectedIndex = self.selectedIndex
     }
 
 }

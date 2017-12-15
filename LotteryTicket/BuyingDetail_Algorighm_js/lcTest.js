@@ -60,18 +60,12 @@ function runCalculate(playingMessage, orderMessage) {
 //        {playing : playingFunction}  = playingMessage;
     const bettingPattern = orderMessage.bettingPattern, multiple = orderMessage.multiple, selectedCodes = orderMessage.bettingPos.pos,
     betInfo = {
-    numbers: 0,
+        numbers: 0,
         amount : 0
     },
     curBonusMultiple = getBonusMultiple(bettingPattern),
     sourceCodes      = generateCodes(playingMessage.area, selectedCodes),
     playingFunction  = playingMessage.playing;
-}
-
-
-function jsFuncTest2() {
-    console.log('*_*');
-    return Math.ceil(15.1);  // 向上取整
 }
 
 
@@ -81,5 +75,38 @@ function formatPenny(money) {
         return '0.000元';
     }
     return (money / 1000).toFixed(3) + '元';
+}
+
+
+function jsFuncTest2() {
+    var zz = kkFramework.funcSB();
+    return zz + " -_- ";
+}
+
+
+
+
+function jsFuncTest_debug() {
+    console.log('*_*');
+    
+//    return Math.ceil(15.1);  // 向上取整
+    
+    
+//    const listData = [ {id:100,name:"0"}, {id:101,name:"a"}, {id:102,name:"哈哈"} ];
+//    var listResult = [];
+//
+//    //listResult = listData.filter(function(value) {
+//    listResult = listData.filter(function(value, i) {  // filter 过滤掉不满足条件的
+//        //return value.id == 102;
+//        //return value.name == "a";
+//        return i < 2;
+//    });
+//
+//    //listData.map(function(value) {
+//    listData.map(function(value, i) {  // map 遍历
+//        listResult.push(value.name);  // push 添加元素到数组尾部
+//    });
+//
+//    return listResult;
 }
 
