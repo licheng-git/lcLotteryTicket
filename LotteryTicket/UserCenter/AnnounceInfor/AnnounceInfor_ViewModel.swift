@@ -29,7 +29,8 @@ class AnnounceInfor_ViewModel {
             for sItem in sList {
                 let model = AnnounceInfor_Model()
                 model.title = sItem["cs_title"] as? String
-                model.time = sItem["cs_update_at"] as? String
+                let timestamp = sItem["cs_update_at"] as! Int
+                model.time = Tools.convertTimestamp(timestamp)
                 model.htmlContent = sItem["cs_content"] as? String
                 arrModels_page.append(model)
             }

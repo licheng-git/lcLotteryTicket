@@ -15,6 +15,7 @@ class AnnounceInforDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "公告信息"
+        self.view.backgroundColor = UIColor.white
         self.addDefaultBackNavItem()
         
         if self.model == nil {
@@ -31,7 +32,7 @@ class AnnounceInforDetailsViewController: UIViewController {
             make.top.equalToSuperview().offset(kDEFAULT_MARGIN_Y+10)
             make.left.equalToSuperview().offset(5)
             make.right.equalToSuperview().offset(-5)
-            //make.height.equalTo(21)
+            //make.height.equalTo(0)
         }
         
         let imgviewTime = UIImageView()
@@ -40,7 +41,7 @@ class AnnounceInforDetailsViewController: UIViewController {
         imgviewTime.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.left.equalTo(lbTitle)
-            make.top.equalTo(lbTitle).offset(10)
+            make.top.equalTo(lbTitle.snp.bottom).offset(10)
         }
         let lbTime = UILabel()
         lbTime.text = self.model!.time
@@ -51,7 +52,7 @@ class AnnounceInforDetailsViewController: UIViewController {
         lbTime.snp.makeConstraints { (make) in
             make.height.equalTo(21)
             make.centerY.equalTo(imgviewTime)
-            make.left.equalTo(imgviewTime).offset(5)
+            make.left.equalTo(imgviewTime.snp.right).offset(5)
             make.right.equalToSuperview().offset(-5)
         }
         

@@ -48,4 +48,14 @@ class Tools {
         return md5Str as String
     }
     
+    
+    static func convertTimestamp(_ timestamp:Int) -> String {
+        //let ti = Double(exactly: timestamp)! / 1000.0
+        let ti = Double(exactly: timestamp)!
+        let d = Date(timeIntervalSince1970: ti)
+        let dFormatter = DateFormatter()
+        dFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dFormatter.string(from: d)
+    }
+    
 }

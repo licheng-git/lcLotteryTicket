@@ -62,8 +62,8 @@ class LoginViewController: UIViewController {
             }, { })
         }
         
-        bgView.tfAccount.text = "youyou88"
-        bgView.tfPassword.text = "123456"
+        //bgView.tfAccount.text = "youyou88"
+        //bgView.tfPassword.text = "123456"
     }
     
     @objc private func navItemClick_Right(_ sender: UIBarButtonItem) {
